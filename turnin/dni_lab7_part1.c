@@ -1,7 +1,7 @@
 /*	Author: lab
  *  Partner(s) Name: 
  *	Lab Section:
- *	Assignment: Lab #  Exercise #
+ *	Assignment: Lab # 7  Exercise #1
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -21,16 +21,16 @@ unsigned long _avr_timer_cntcurr = 0;
 
 unsigned char count = 0;
 unsigned char hold = 0;
-enum States{start, store, incr, incrHold, decr, decrHold, reset} state;
-
+enum States{Start, store, incr, incrHold, decr, decrHold, reset} state;
 void Tick(){
 	unsigned char tempA = ~PINA;
+	//transitions
 	switch(state){
-		case start:
+		case Start:
 			state = store;
 			break;
 		case store:
-			if((tempA & 0x03) == 0x01){
+			if((tempA & 0x03) ==  0x01){
 				state = incr;
 			}
 			else if((tempA & 0x03) == 0x02){
@@ -78,7 +78,6 @@ void Tick(){
 				state = store;
 			}
 			break;
-
 		case decr:
 			if((tempA & 0x03) == 0x01){
 				state = incr;
@@ -115,7 +114,6 @@ void Tick(){
 			}
 
 			break;
-
 		case reset:
 			if((tempA & 0x03) == 0x03){
 				state = reset;
@@ -130,21 +128,19 @@ void Tick(){
 				state = store;
 			}
 			break;
-
+	
 		default:
-			state = start;
+			state = Start;
 			break;
 	}
-
+	//state actions
 	switch(state){
-		case start:
+		case Start:
 			break;
-
 		case store:
 			LCD_ClearScreen();
-			LCD_WriteData(count + '0');
+		 	LCD_WriteData(count + '0');
 			break;
-
 		case incr:
 			if(count != 9){
 				count++;
@@ -152,11 +148,9 @@ void Tick(){
 			LCD_ClearScreen();
 			LCD_WriteData(count + '0');
 			break;
-
 		case incrHold:
 			hold++;
 			break;
-
 		case decr:
 			if(count != 0){
 				count--;
@@ -164,23 +158,21 @@ void Tick(){
 			LCD_ClearScreen();
 			LCD_WriteData(count + '0');
 			break;
-
 		case decrHold:
 			hold++;
 			break;
-
 		case reset:
 			count = 0;
 			LCD_ClearScreen();
 			LCD_WriteData(count + '0');
 			break;
-
-
+	
 		default:
 			break;
-	}
-}
 
+	}
+
+}
 void TimerOn(){
 	TCCR1B = 0x0B;
 	OCR1A = 125;
@@ -213,14 +205,16 @@ void TimerSet(unsigned long M){
 
 int main(void) {
     /* Insert DDR and PORT initializations */
-    DDRA = 0x00; PORTA = 0xFF;
-    DDRC = 0xFF; PORTC = 0x00;
-    DDRD = 0xFF: PORTD = 0x00;
-    LCD_init();
+	
+	DDRC = 0xff;	PORTC = 0x00;
+	DDRD = 0xff;	PORTD = 0x00;
+	DDRA = 0x00;	PORTA = 0xff;
 
-    TimerSet(100);
-    TimerOn();
-
+	LCD_init();
+	
+       	TimerSet(100);
+	TimerOn();	
+	
     /* Insert your solution below */
     while (1) {
 	Tick();
